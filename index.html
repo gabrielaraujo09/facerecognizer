@@ -14,6 +14,9 @@
   <!-- Fork atualizado e compatível: @vladmandic/face-api -->
   <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
 
+  <!-- Supabase JS Client v2 para persistência em Banco de Dados -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     /* ==========================================================================
        DESIGN SYSTEM & VARIÁVEIS CSS (TEMA ESCURO MODERNO)
@@ -1364,8 +1367,20 @@
     // URL dos modelos pré-treinados hospedados na CDN oficial da biblioteca vladmandic/face-api
     const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
     
-    // Chave de armazenamento no LocalStorage do navegador
+    // Chave de armazenamento no LocalStorage (cache offline / contingência)
     const STORAGE_KEY = 'face_recognition_users_db_v1';
+
+    // Conexão direta com o Banco de Dados Supabase (PostgreSQL + pgvector)
+    const SUPABASE_URL = 'https://cmckayxfgrsowskrcbkt.supabase.co';
+    const SUPABASE_KEY = 'sb_secret_sQaI3K02Yz6DXbCmGFi1kQ_NdgmyRxK';
+    let supabaseClient = null;
+    if (window.supabase && typeof window.supabase.createClient === 'function') {
+      try {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      } catch (err) {
+        console.warn('Erro ao inicializar cliente Supabase:', err);
+      }
+    }
 
     // Limiar de decisão para aceitação do reconhecimento facial (Threshold de Distância Euclidiana)
     // Valores de distância <= 0.6 indicam a mesma pessoa com alta confiabilidade estatística
@@ -1491,16 +1506,17 @@
 
     /**
      * =========================================================================
-     * GESTÃO DA BASE DE DADOS LOCAL (LocalStorage com Float32Array)
+     * GESTÃO DA BASE DE DADOS (Supabase + Cache Local com Float32Array)
      * =========================================================================
      */
 
+    // Cache em memória para inferências instantâneas de alta performance
+    let cachedUsers = [];
+
     /**
-     * Recupera todos os cadastros do LocalStorage e converte os arrays normais
-     * de volta para Float32Array (formato exigido pelas funções de métrica).
-     * @returns {Array<{ id: string, name: string, descriptor: Float32Array, date: string }>}
+     * Recupera dados do cache local do navegador (LocalStorage)
      */
-    function loadUsersFromStorage() {
+    function loadUsersFromLocalStorage() {
       try {
         const rawData = localStorage.getItem(STORAGE_KEY);
         if (!rawData) return [];
@@ -1511,34 +1527,107 @@
         return parsed.map(item => ({
           id: item.id || Math.random().toString(36).substring(2),
           name: item.name,
-          // Reconstituição obrigatória do vetor numérico tipado de 128 dimensões
           descriptor: new Float32Array(item.descriptor),
           date: item.date || 'Desconhecida'
         }));
       } catch (err) {
-        addLog('Erro ao carregar dados salvos do localStorage: ' + err.message, 'erro');
+        console.warn('Erro ao carregar dados salvos do localStorage:', err);
         return [];
       }
     }
 
     /**
-     * Salva a lista de usuários no LocalStorage serializando Float32Array via Array.from().
-     * @param {Array<{ id: string, name: string, descriptor: Float32Array, date: string }>} users
+     * Salva a lista de usuários no cache local (LocalStorage)
      */
-    function saveUsersToStorage(users) {
+    function saveUsersToLocalStorage(users) {
       try {
         const serializable = users.map(u => ({
           id: u.id,
           name: u.name,
-          // Float32Array não é serializável nativamente via JSON.stringify(),
-          // portanto a conversão para Array Javascript padrão é indispensável.
           descriptor: Array.from(u.descriptor),
           date: u.date
         }));
         localStorage.setItem(STORAGE_KEY, JSON.stringify(serializable));
       } catch (err) {
-        addLog('Erro ao persistir usuários no localStorage: ' + err.message, 'erro');
+        console.warn('Erro ao persistir usuários no localStorage:', err);
       }
+    }
+
+    /**
+     * Retorna a lista atual de usuários disponíveis em memória/cache
+     */
+    function loadUsersFromStorage() {
+      if (cachedUsers.length > 0) {
+        return cachedUsers;
+      }
+      cachedUsers = loadUsersFromLocalStorage();
+      return cachedUsers;
+    }
+
+    /**
+     * Atualiza o cache de usuários local e em memória
+     */
+    function saveUsersToStorage(users) {
+      cachedUsers = users;
+      saveUsersToLocalStorage(users);
+    }
+
+    /**
+     * Sincroniza e busca todos os rostos cadastrados no banco de dados Supabase
+     */
+    async function syncUsersFromSupabase() {
+      if (!supabaseClient) return cachedUsers;
+      try {
+        const { data, error } = await supabaseClient
+          .from('registered_faces')
+          .select('id, name, descriptor, created_at')
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.warn('Erro ao consultar Supabase:', error);
+          return cachedUsers;
+        }
+
+        if (Array.isArray(data)) {
+          const validUsers = [];
+          for (const item of data) {
+            try {
+              let parsedDescriptor;
+              if (typeof item.descriptor === 'string') {
+                try {
+                  parsedDescriptor = JSON.parse(item.descriptor);
+                } catch {
+                  parsedDescriptor = item.descriptor.replace(/[\[\]]/g, '').split(',').map(Number);
+                }
+              } else if (Array.isArray(item.descriptor)) {
+                parsedDescriptor = item.descriptor;
+              } else {
+                continue;
+              }
+
+              if (Array.isArray(parsedDescriptor) && parsedDescriptor.length === 128) {
+                validUsers.push({
+                  id: item.id,
+                  name: item.name,
+                  descriptor: new Float32Array(parsedDescriptor),
+                  date: item.created_at ? new Date(item.created_at).toLocaleString('pt-BR') : 'Data não informada'
+                });
+              }
+            } catch (itemErr) {
+              console.warn('Item corrompido no banco ignorado:', item, itemErr);
+            }
+          }
+
+          if (validUsers.length > 0 || data.length === 0) {
+            cachedUsers = validUsers;
+            saveUsersToLocalStorage(cachedUsers);
+          }
+          return cachedUsers;
+        }
+      } catch (err) {
+        console.warn('Falha na comunicação com o Supabase:', err);
+      }
+      return cachedUsers;
     }
 
     /**
@@ -1613,30 +1702,44 @@
     }
 
     /**
-     * Remove um usuário ou amostra pelo ID
+     * Remove um usuário ou amostra pelo ID (no Supabase e no cache local)
      */
-    function removeUserById(id, name) {
-      const users = loadUsersFromStorage();
-      const filtered = users.filter(u => u.id !== id);
-      saveUsersToStorage(filtered);
+    async function removeUserById(id, name) {
+      if (supabaseClient) {
+        try {
+          await supabaseClient.from('registered_faces').delete().eq('id', id);
+        } catch (err) {
+          console.warn('Erro ao remover do Supabase:', err);
+        }
+      }
+      cachedUsers = cachedUsers.filter(u => u.id !== id);
+      saveUsersToLocalStorage(cachedUsers);
       renderUsersList();
       addLog(`Registro removido: "${name}"`, 'aviso');
     }
 
     /**
-     * Limpa toda a base de dados
+     * Limpa toda a base de dados (no Supabase e no cache local)
      */
-    function clearAllUsers() {
+    async function clearAllUsers() {
       const users = loadUsersFromStorage();
       if (users.length === 0) {
         addLog('A base de dados já está vazia.', 'aviso');
         return;
       }
 
-      if (confirm(`Deseja realmente apagar todos os ${users.length} registros cadastrados?`)) {
+      if (confirm(`Deseja realmente apagar todos os ${users.length} registros cadastrados no Supabase e localmente?`)) {
+        if (supabaseClient) {
+          try {
+            await supabaseClient.from('registered_faces').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+          } catch (err) {
+            console.warn('Erro ao apagar registros do Supabase:', err);
+          }
+        }
         localStorage.removeItem(STORAGE_KEY);
+        cachedUsers = [];
         renderUsersList();
-        addLog('Todos os usuários e embeddings foram apagados da base.', 'aviso');
+        addLog('Todos os usuários e embeddings foram apagados do banco e da base local.', 'aviso');
       }
     }
 
@@ -1710,10 +1813,15 @@
         });
 
         webcamVideo.srcObject = stream;
+        try {
+          await webcamVideo.play();
+        } catch (playErr) {
+          console.warn('Alerta ao invocar play() no vídeo:', playErr);
+        }
 
         // Aguarda metadados para sincronizar dimensões exatas de pixel entre o vídeo e o canvas
         await new Promise((resolve) => {
-          webcamVideo.onloadedmetadata = () => {
+          const syncDimensions = () => {
             const vWidth = webcamVideo.videoWidth || 640;
             const vHeight = webcamVideo.videoHeight || 480;
 
@@ -1722,9 +1830,17 @@
 
             // Ajusta o aspect-ratio do container ao do vídeo real capturado
             viewportContainer.style.aspectRatio = `${vWidth} / ${vHeight}`;
-
             resolve();
           };
+
+          if (webcamVideo.readyState >= 1 && webcamVideo.videoWidth > 0) {
+            syncDimensions();
+            return;
+          }
+
+          webcamVideo.onloadedmetadata = syncDimensions;
+          // Timeout de segurança de 3s para evitar travamento da tela se o evento já tiver passado
+          setTimeout(syncDimensions, 3000);
         });
 
         isCameraReady = true;
@@ -1988,20 +2104,51 @@
         // Criação do objeto de cadastro
         const now = new Date();
         const dateFormatted = now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR', { hour12: false });
+        let assignedId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+        let savedToSupabase = false;
+
+        // Persistência direta no Banco de Dados Supabase (PostgreSQL + pgvector)
+        if (supabaseClient) {
+          try {
+            addLog(`Enviando cadastro de "${rawName}" para o banco de dados Supabase...`, 'info');
+            const { data, error } = await supabaseClient
+              .from('registered_faces')
+              .insert([{
+                name: rawName,
+                // Vetor de 128 dimensões compatível nativamente com a coluna vector(128) do Supabase
+                descriptor: JSON.stringify(Array.from(descriptor))
+              }])
+              .select('id, name, created_at');
+
+            if (error) {
+              console.error('Erro retornado pelo Supabase:', error);
+              addLog('Aviso: Falha ao persistir no Supabase (' + error.message + '). Salvando em cache local.', 'aviso');
+            } else if (data && data[0]) {
+              assignedId = data[0].id;
+              savedToSupabase = true;
+            }
+          } catch (cloudErr) {
+            console.error('Falha de rede ao conectar com Supabase:', cloudErr);
+            addLog('Aviso: Erro de conexão com Supabase. Salvando em cache local.', 'aviso');
+          }
+        }
 
         const newRecord = {
-          id: 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+          id: assignedId,
           name: rawName,
           descriptor: descriptor,
           date: dateFormatted
         };
 
-        const existingUsers = loadUsersFromStorage();
-        existingUsers.push(newRecord);
-        saveUsersToStorage(existingUsers);
+        cachedUsers.unshift(newRecord);
+        saveUsersToLocalStorage(cachedUsers);
 
         renderUsersList();
-        addLog(`Rosto cadastrado com sucesso para: "${rawName}"! (Amostras totais: ${existingUsers.length})`, 'sucesso');
+        if (savedToSupabase) {
+          addLog(`Rosto cadastrado com sucesso no Supabase para: "${rawName}"! (Total na base: ${cachedUsers.length})`, 'sucesso');
+        } else {
+          addLog(`Rosto cadastrado localmente para: "${rawName}"! (Total na base: ${cachedUsers.length})`, 'sucesso');
+        }
         userNameInput.value = '';
 
       } catch (err) {
@@ -2089,6 +2236,17 @@
           setDoor(false);
         }
 
+        // Auditoria: salva o evento de acesso na tabela access_logs do Supabase em segundo plano
+        if (supabaseClient) {
+          supabaseClient.from('access_logs').insert([{
+            face_id: (bestMatch && minDistance <= DISTANCE_THRESHOLD && bestMatch.id && bestMatch.id.includes('-')) ? bestMatch.id : null,
+            user_name: bestMatch ? bestMatch.name : 'Desconhecido',
+            status: (bestMatch && minDistance <= DISTANCE_THRESHOLD) ? 'autorizado' : 'negado',
+            distance: minDistance !== Infinity ? parseFloat(distanceFormatted) : null,
+            door_unlocked: (bestMatch && minDistance <= DISTANCE_THRESHOLD)
+          }]).then(() => {}).catch(err => console.warn('Erro ao gravar log no Supabase:', err));
+        }
+
       } catch (err) {
         addLog('Erro durante a rotina de reconhecimento: ' + err.message, 'erro');
       } finally {
@@ -2143,10 +2301,23 @@
     const saveDB = saveUsersToStorage;
     const renderUsers = renderUsersList;
 
-    // Boot inicial do aplicativo: executa apenas renderUsers() e exibe o Menu Inicial
-    window.addEventListener('DOMContentLoaded', () => {
+    // Boot inicial do aplicativo: renderiza cache imediato, sincroniza com Supabase e exibe o Menu Inicial
+    window.addEventListener('DOMContentLoaded', async () => {
+      // 1. Exibe instantaneamente do cache local para não haver atraso na interface
+      cachedUsers = loadUsersFromLocalStorage();
       renderUsers();
       showScreen('menu');
+
+      // 2. Conecta e sincroniza os dados da nuvem no Supabase
+      if (supabaseClient) {
+        try {
+          await syncUsersFromSupabase();
+          renderUsers();
+          addLog('Base de dados Supabase conectada e sincronizada.', 'sucesso');
+        } catch (e) {
+          console.warn('Erro na sincronização inicial com Supabase:', e);
+        }
+      }
     });
   </script>
 </body>
