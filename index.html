@@ -750,38 +750,476 @@
       color: var(--text-muted);
       margin: 0 0.2rem;
     }
+
+    /* ==========================================================================
+       TELAS DO FLUXO: MENU INICIAL, INICIALIZAÇÃO E PAINEL
+       ========================================================================== */
+    .hidden {
+      display: none !important;
+    }
+
+    .fullscreen-screen {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.5rem;
+      width: 100%;
+    }
+
+    .panel-screen-wrapper {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      width: 100%;
+    }
+
+    /* Card do Menu Inicial */
+    .menu-card {
+      max-width: 680px;
+      width: 100%;
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 2.75rem 2.25rem;
+      box-shadow: var(--shadow-card);
+      text-align: center;
+      position: relative;
+      animation: fadeInScreen 0.4s ease-out;
+    }
+
+    @keyframes fadeInScreen {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .menu-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: var(--radius-full);
+      background: rgba(6, 182, 212, 0.12);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      color: var(--accent-cyan);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+    }
+
+    .menu-title {
+      font-size: 2.25rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(180deg, #ffffff 20%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.4rem;
+    }
+
+    .menu-subtitle {
+      font-size: 1.05rem;
+      color: var(--accent-cyan);
+      font-weight: 500;
+      margin-bottom: 1.25rem;
+    }
+
+    .menu-description {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 2rem;
+      max-width: 580px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .menu-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+      align-items: center;
+    }
+
+    .btn-start-large {
+      width: 100%;
+      max-width: 360px;
+      padding: 1.05rem 1.85rem;
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--primary) 100%);
+      color: #ffffff;
+      box-shadow: 0 8px 25px -4px rgba(6, 182, 212, 0.45);
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      transition: all 0.25s ease;
+    }
+
+    .btn-start-large:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px -4px rgba(99, 102, 241, 0.55);
+      background: linear-gradient(135deg, #38bdf8 0%, var(--primary-light) 100%);
+    }
+
+    .btn-start-large:active {
+      transform: translateY(0);
+    }
+
+    .btn-how-it-works {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.65rem 1.25rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-how-it-works:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: var(--text-main);
+    }
+
+    /* Painel Retrátil Como Funciona */
+    .how-it-works-panel {
+      margin-top: 1.75rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-color);
+      text-align: left;
+      animation: fadeInScreen 0.3s ease-out;
+    }
+
+    .how-it-works-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem;
+    }
+
+    @media (max-width: 600px) {
+      .steps-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .step-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .step-number {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .step-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .step-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* Card da Tela de Inicializando */
+    .loading-card {
+      max-width: 520px;
+      width: 100%;
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem 2rem;
+      box-shadow: var(--shadow-card);
+      text-align: center;
+      animation: fadeInScreen 0.35s ease-out;
+    }
+
+    .init-steps-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      margin: 1.75rem 0;
+      text-align: left;
+    }
+
+    .init-step-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.8rem 1rem;
+      border-radius: var(--radius-sm);
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-color);
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      transition: all 0.25s ease;
+    }
+
+    .init-step-item.active {
+      color: var(--text-main);
+      border-color: var(--accent-cyan);
+      background: rgba(6, 182, 212, 0.08);
+    }
+
+    .init-step-item.completed {
+      color: var(--color-success);
+      border-color: rgba(16, 185, 129, 0.3);
+      background: rgba(16, 185, 129, 0.06);
+    }
+
+    .init-step-item.error {
+      color: var(--color-error);
+      border-color: rgba(244, 63, 94, 0.3);
+      background: rgba(244, 63, 94, 0.08);
+    }
+
+    .step-icon-indicator {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-weight: 700;
+    }
+
+    .init-error-panel {
+      margin-top: 1.5rem;
+      padding: 1.25rem;
+      border-radius: var(--radius-sm);
+      background: rgba(244, 63, 94, 0.1);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      text-align: center;
+    }
+
+    .init-error-panel p {
+      color: #fca5a5;
+      font-size: 0.86rem;
+      margin-bottom: 1rem;
+      line-height: 1.45;
+    }
+
+    .init-error-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-stop-system {
+      background: transparent;
+      border: 1px solid rgba(244, 63, 94, 0.35);
+      color: #fda4af;
+      padding: 0.42rem 0.85rem;
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-stop-system:hover {
+      background: rgba(244, 63, 94, 0.15);
+      border-color: var(--color-error);
+      color: #ffe4e6;
+    }
   </style>
 </head>
 <body>
 
-  <!-- CABEÇALHO -->
-  <header>
-    <div class="header-container">
-      <div class="brand">
-        <div class="brand-icon">
-          <!-- Ícone Face Recognition SVG -->
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
-            <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
-            <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
-            <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
-            <circle cx="9" cy="9" r="1"></circle>
-            <circle cx="15" cy="9" r="1"></circle>
-            <path d="M10 15c.5.5 1.2.8 2 .8s1.5-.3 2-.8"></path>
-          </svg>
-        </div>
-        <div>
-          <h1 class="brand-title">Face Recognition AI</h1>
-          <p class="brand-subtitle">Reconhecimento Facial por Embeddings 128D (ResNet + SSD MobileNet)</p>
-        </div>
+  <!-- ================= TELA 1: MENU INICIAL ================= -->
+  <div id="menuScreen" class="fullscreen-screen">
+    <div class="menu-card">
+      <div class="menu-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="9" y1="3" x2="9" y2="21"></line>
+        </svg>
+        PORTARIA INTELIGENTE
       </div>
 
-      <div id="systemStatusBadge" class="status-badge">
-        <span class="status-dot"></span>
-        <span id="systemStatusText">Carregando modelos de IA...</span>
+      <h1 class="menu-title">EDIFÍCIO AURORA</h1>
+      <p class="menu-subtitle">Portaria Inteligente · Acesso por Reconhecimento Facial</p>
+
+      <p class="menu-description">
+        Bem-vindo à portaria do Edifício Aurora. O controle de acesso opera 100% no navegador utilizando redes neurais profundas para identificação facial em tempo real de moradores e visitantes cadastrados.
+      </p>
+
+      <div class="menu-actions">
+        <button id="btnStartSystem" class="btn-start-large">
+          <svg viewBox="0 0 24 24" fill="currentColor" style="width: 20px; height: 20px;">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          ▶ INICIAR SISTEMA
+        </button>
+
+        <button id="btnHowItWorks" class="btn-how-it-works">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          Como funciona
+        </button>
+      </div>
+
+      <!-- Painel Retrátil Como Funciona (4 Passos Didáticos) -->
+      <div id="howItWorksPanel" class="how-it-works-panel hidden">
+        <h3 class="how-it-works-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px; stroke: var(--accent-cyan);">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+          Como Funciona o Reconhecimento (4 Passos)
+        </h3>
+        <div class="steps-grid">
+          <div class="step-card">
+            <span class="step-number">Passo 1</span>
+            <span class="step-title">Detecção Facial</span>
+            <p class="step-desc">A câmera detecta o rosto e mapeia os 68 marcos anatômicos em tempo real via SSD MobileNet.</p>
+          </div>
+          <div class="step-card">
+            <span class="step-number">Passo 2</span>
+            <span class="step-title">Vetor de Embedding</span>
+            <p class="step-desc">A rede neural ResNet gera um embedding de 128 números normalizados representando a identidade facial.</p>
+          </div>
+          <div class="step-card">
+            <span class="step-number">Passo 3</span>
+            <span class="step-title">Armazenamento Local</span>
+            <p class="step-desc">O embedding é serializado e salvo no navegador (localStorage) com reconstituição em Float32Array.</p>
+          </div>
+          <div class="step-card">
+            <span class="step-number">Passo 4</span>
+            <span class="step-title">Distância Euclidiana</span>
+            <p class="step-desc">Na entrada, calcula-se a distância euclidiana contra os cadastros. Se a distância for &le; 0.6, o acesso é liberado.</p>
+          </div>
+        </div>
       </div>
     </div>
-  </header>
+  </div>
+
+  <!-- ================= TELA 2: INICIALIZANDO ================= -->
+  <div id="loadingScreen" class="fullscreen-screen hidden">
+    <div class="loading-card">
+      <div class="spinner" style="margin: 0 auto 1.25rem;"></div>
+      <h2 style="font-size: 1.35rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.35rem;">Inicializando Sistema</h2>
+      <p id="loadingScreenStatusText" style="font-size: 0.88rem; color: var(--text-muted);">Preparando recursos neurais e dispositivos...</p>
+
+      <ul class="init-steps-list">
+        <li id="stepModels" class="init-step-item">
+          <div class="step-icon-indicator" id="stepModelsIcon">
+            <span class="status-dot"></span>
+          </div>
+          <span id="stepModelsText">Carregando modelos de IA...</span>
+        </li>
+        <li id="stepCamera" class="init-step-item">
+          <div class="step-icon-indicator" id="stepCameraIcon">
+            <span class="status-dot"></span>
+          </div>
+          <span id="stepCameraText">Solicitando acesso à câmera...</span>
+        </li>
+        <li id="stepOnline" class="init-step-item">
+          <div class="step-icon-indicator" id="stepOnlineIcon">
+            <span class="status-dot"></span>
+          </div>
+          <span id="stepOnlineText">Sistema online</span>
+        </li>
+      </ul>
+
+      <!-- Painel de Erro na Inicialização -->
+      <div id="initErrorPanel" class="init-error-panel hidden">
+        <p id="initErrorMessage">Ocorreu um erro ao inicializar o sistema.</p>
+        <div class="init-error-actions">
+          <button id="btnRetryInit" class="btn btn-primary" style="padding: 0.6rem 1.2rem; font-size: 0.85rem;">
+            Tentar novamente
+          </button>
+          <button id="btnBackToMenu" class="btn btn-secondary" style="padding: 0.6rem 1.2rem; font-size: 0.85rem;">
+            Voltar ao menu
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= TELA 3: PAINEL DO SISTEMA ================= -->
+  <div id="panelScreen" class="panel-screen-wrapper hidden">
+    <!-- CABEÇALHO -->
+    <header>
+      <div class="header-container">
+        <div class="brand">
+          <div class="brand-icon">
+            <!-- Ícone Face Recognition SVG -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
+              <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
+              <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
+              <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
+              <circle cx="9" cy="9" r="1"></circle>
+              <circle cx="15" cy="9" r="1"></circle>
+              <path d="M10 15c.5.5 1.2.8 2 .8s1.5-.3 2-.8"></path>
+            </svg>
+          </div>
+          <div>
+            <h1 class="brand-title">Edifício Aurora</h1>
+            <p class="brand-subtitle">Portaria Inteligente · Acesso por Reconhecimento Facial</p>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+          <div id="systemStatusBadge" class="status-badge">
+            <span class="status-dot"></span>
+            <span id="systemStatusText">Carregando modelos de IA...</span>
+          </div>
+          <button id="btnStopSystem" class="btn-stop-system" title="Encerrar sistema e desligar webcam">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;">
+              <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
+              <line x1="12" y1="2" x2="12" y2="12"></line>
+            </svg>
+            ⏻ Encerrar sistema
+          </button>
+        </div>
+      </div>
+    </header>
 
   <!-- CONTEÚDO PRINCIPAL -->
   <main>
@@ -911,6 +1349,7 @@
       <span class="badge-pill">Distância Euclidiana</span>
     </p>
   </footer>
+  </div>
 
   <!-- SCRIPT DE INTELIGÊNCIA ARTIFICIAL E LÓGICA DO SISTEMA -->
   <script>
@@ -949,12 +1388,63 @@
     const systemStatusBadge = document.getElementById('systemStatusBadge');
     const systemStatusText = document.getElementById('systemStatusText');
 
+    // Telas e Controles do Menu / Inicialização
+    const menuScreen = document.getElementById('menuScreen');
+    const loadingScreen = document.getElementById('loadingScreen');
+    const panelScreen = document.getElementById('panelScreen');
+    const btnStartSystem = document.getElementById('btnStartSystem');
+    const btnHowItWorks = document.getElementById('btnHowItWorks');
+    const howItWorksPanel = document.getElementById('howItWorksPanel');
+    const btnStopSystem = document.getElementById('btnStopSystem');
+    const stepModels = document.getElementById('stepModels');
+    const stepCamera = document.getElementById('stepCamera');
+    const stepOnline = document.getElementById('stepOnline');
+    const initErrorPanel = document.getElementById('initErrorPanel');
+    const initErrorMessage = document.getElementById('initErrorMessage');
+    const btnRetryInit = document.getElementById('btnRetryInit');
+    const btnBackToMenu = document.getElementById('btnBackToMenu');
+    const loadingScreenStatusText = document.getElementById('loadingScreenStatusText');
+
     // --- VARIÁVEIS DE CONTROLE DE FLUXO ---
     let isModelsLoaded = false;
+    let modelsLoaded = false;      // Flag modelsLoaded conforme solicitado
     let isCameraReady = false;
     let isDetectingFrame = false; // Flag para garantir que inferências do loop de renderização não se sobreponham
     let animationFrameId = null;  // Identificador do requestAnimationFrame
+    let rafId = null;             // Identificador rafId conforme solicitado
     let isBusyAction = false;      // Evita disparar cadastro/reconhecimento concorrente
+    let running = false;          // Flag running para controlar se o loop de desenho está ativo
+    let stream = null;            // Variável stream para armazenar a instância do MediaStream
+
+    /**
+     * Alterna entre as telas da aplicação mantendo apenas uma visível por vez
+     * @param {'menu' | 'loading' | 'panel'} screenName
+     */
+    function showScreen(screenName) {
+      menuScreen.classList.add('hidden');
+      loadingScreen.classList.add('hidden');
+      panelScreen.classList.add('hidden');
+
+      if (screenName === 'menu') {
+        menuScreen.classList.remove('hidden');
+      } else if (screenName === 'loading') {
+        loadingScreen.classList.remove('hidden');
+      } else if (screenName === 'panel') {
+        panelScreen.classList.remove('hidden');
+      }
+    }
+
+    /**
+     * Controle seguro de abertura da catraca / porta do Edifício Aurora
+     * @param {boolean} open
+     */
+    function setDoor(open) {
+      if (open) {
+        addLog('Catraca LIBERADA - Acesso concedido ao Edifício Aurora.', 'sucesso');
+      } else {
+        // Catraca fechada / travada
+      }
+    }
 
     /**
      * Sistema de Logging com Timestamp e Cores Semânticas
@@ -1163,6 +1653,7 @@
      * 3. faceRecognitionNet: Rede ResNet de 128 dimensões para extração de embeddings
      */
     async function loadModels() {
+      if (modelsLoaded) return;
       addLog('Buscando e carregando modelos de IA da CDN...', 'info');
       viewportOverlayText.textContent = 'Baixando pesos das redes neurais...';
 
@@ -1178,9 +1669,11 @@
           faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
         ]);
 
+        modelsLoaded = true;
         isModelsLoaded = true;
         addLog('Modelos carregados com sucesso (SSD MobileNet V1, Landmarks 68 e ResNet 128D)!', 'sucesso');
       } catch (err) {
+        modelsLoaded = false;
         isModelsLoaded = false;
         const msg = 'Falha crítica ao carregar modelos: ' + err.message;
         addLog(msg, 'erro');
@@ -1193,7 +1686,7 @@
     /**
      * Inicializa a captura de vídeo da Webcam através da API MediaDevices
      */
-    async function startWebcam() {
+    async function startCamera() {
       addLog('Solicitando permissão de acesso à webcam...', 'info');
       viewportOverlayText.textContent = 'Aguardando permissão de câmera...';
 
@@ -1202,11 +1695,12 @@
         addLog(msg, 'erro');
         viewportOverlayText.textContent = 'Câmera não suportada neste contexto.';
         updateSystemStatus('Câmera indisponível', 'error');
-        return;
+        throw new Error(msg);
       }
 
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
+        // Armazena a stream na variável global/de escopo stream
+        stream = await navigator.mediaDevices.getUserMedia({
           video: {
             width: { ideal: 640 },
             height: { ideal: 480 },
@@ -1237,14 +1731,6 @@
         viewportOverlay.classList.add('hidden');
         addLog(`Câmera inicializada com sucesso (${detectionCanvas.width}x${detectionCanvas.height}px)!`, 'sucesso');
 
-        // Habilita os botões de ação na interface
-        btnRegister.disabled = false;
-        btnRecognize.disabled = false;
-        updateSystemStatus('Sistema Pronto', 'ready');
-
-        // Inicia o loop contínuo de inferência e renderização dos marcos faciais
-        startDetectionLoop();
-
       } catch (err) {
         isCameraReady = false;
         let erroDesc = err.message;
@@ -1256,8 +1742,10 @@
         addLog('Erro ao acessar webcam: ' + erroDesc, 'erro');
         viewportOverlayText.textContent = 'Acesso à webcam recusado ou indisponível.';
         updateSystemStatus('Câmera bloqueada', 'error');
+        throw err;
       }
     }
+    const startWebcam = startCamera;
 
     /**
      * =========================================================================
@@ -1272,9 +1760,18 @@
       };
       faceapi.matchDimensions(detectionCanvas, displaySize);
 
+      running = true;
+
       async function renderFrame() {
+        if (!running) {
+          return;
+        }
+
         if (webcamVideo.paused || webcamVideo.ended || !isCameraReady) {
-          animationFrameId = requestAnimationFrame(renderFrame);
+          if (running) {
+            rafId = requestAnimationFrame(renderFrame);
+            animationFrameId = rafId;
+          }
           return;
         }
 
@@ -1290,7 +1787,7 @@
             const ctx = detectionCanvas.getContext('2d');
             ctx.clearRect(0, 0, detectionCanvas.width, detectionCanvas.height);
 
-            if (detection) {
+            if (detection && running) {
               const resizedDetections = faceapi.resizeResults(detection, displaySize);
 
               // Desenha o retângulo delimitador com estilo customizado
@@ -1306,10 +1803,137 @@
           }
         }
 
-        animationFrameId = requestAnimationFrame(renderFrame);
+        if (running) {
+          rafId = requestAnimationFrame(renderFrame);
+          animationFrameId = rafId;
+        }
       }
 
-      animationFrameId = requestAnimationFrame(renderFrame);
+      rafId = requestAnimationFrame(renderFrame);
+      animationFrameId = rafId;
+    }
+    const drawLoop = startDetectionLoop;
+
+    /**
+     * Inicia o sistema a partir do clique no botão "Iniciar sistema" ou "Tentar novamente"
+     */
+    async function startSystem() {
+      showScreen('loading');
+      initErrorPanel.classList.add('hidden');
+      loadingScreenStatusText.textContent = 'Inicializando serviços do Edifício Aurora...';
+
+      // Reseta indicadores visuais das etapas
+      stepModels.className = 'init-step-item active';
+      stepCamera.className = 'init-step-item';
+      stepOnline.className = 'init-step-item';
+      stepModels.querySelector('.step-icon-indicator').innerHTML = '<span class="status-dot"></span>';
+      stepCamera.querySelector('.step-icon-indicator').innerHTML = '<span class="status-dot"></span>';
+      stepOnline.querySelector('.step-icon-indicator').innerHTML = '<span class="status-dot"></span>';
+
+      try {
+        // 1. Carrega os modelos de IA (apenas se ainda não carregados)
+        if (!modelsLoaded) {
+          loadingScreenStatusText.textContent = 'Carregando modelos de IA...';
+          await loadModels();
+        }
+        stepModels.className = 'init-step-item completed';
+        stepModels.querySelector('.step-icon-indicator').textContent = '✓';
+
+        // 2. Solicita acesso à câmera
+        stepCamera.className = 'init-step-item active';
+        loadingScreenStatusText.textContent = 'Solicitando acesso à câmera...';
+        await startCamera();
+        stepCamera.className = 'init-step-item completed';
+        stepCamera.querySelector('.step-icon-indicator').textContent = '✓';
+
+        // 3. Sistema online
+        stepOnline.className = 'init-step-item active';
+        loadingScreenStatusText.textContent = 'Sistema online. Conectando portaria...';
+        stepOnline.className = 'init-step-item completed';
+        stepOnline.querySelector('.step-icon-indicator').textContent = '✓';
+
+        // Transição suave
+        await new Promise(r => setTimeout(r, 350));
+
+        // 4. Mostra o painel
+        showScreen('panel');
+
+        // 5. Habilita os botões de ação
+        btnRegister.disabled = false;
+        btnRecognize.disabled = false;
+        updateSystemStatus('Sistema Pronto', 'ready');
+
+        // 6. Inicia o loop de desenho
+        startDetectionLoop();
+
+      } catch (err) {
+        console.error('Erro ao iniciar sistema:', err);
+        let errorMsg = err.message || 'Erro ao inicializar o sistema biométrico.';
+        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+          errorMsg = 'Permissão de acesso à webcam negada pelo usuário. Permita o uso da câmera para continuar.';
+        } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+          errorMsg = 'Nenhuma câmera de vídeo foi encontrada no seu dispositivo.';
+        }
+        initErrorMessage.textContent = errorMsg;
+        initErrorPanel.classList.remove('hidden');
+
+        if (!modelsLoaded) {
+          stepModels.className = 'init-step-item error';
+          stepModels.querySelector('.step-icon-indicator').textContent = '✕';
+        } else {
+          stepCamera.className = 'init-step-item error';
+          stepCamera.querySelector('.step-icon-indicator').textContent = '✕';
+        }
+      }
+    }
+
+    /**
+     * Encerra o sistema sem recarregar a página
+     */
+    function stopSystem() {
+      // 1. Para o loop de desenho
+      running = false;
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+      }
+
+      // 2. Chama track.stop() em todas as tracks do stream (apaga a luz da webcam)
+      if (stream) {
+        try {
+          stream.getTracks().forEach(track => track.stop());
+        } catch (e) {
+          console.warn('Erro ao interromper tracks da câmera:', e);
+        }
+        stream = null;
+      }
+
+      // 3. video.srcObject = null
+      webcamVideo.srcObject = null;
+
+      // 4. Limpa o canvas
+      const ctx = detectionCanvas.getContext('2d');
+      ctx.clearRect(0, 0, detectionCanvas.width, detectionCanvas.height);
+
+      // 5. Chama setDoor(false)
+      setDoor(false);
+
+      // 6. Desabilita botões e volta status
+      btnRegister.disabled = true;
+      btnRecognize.disabled = true;
+      isCameraReady = false;
+      viewportOverlay.classList.remove('hidden');
+      viewportOverlayText.textContent = 'Sistema parado. Inicie novamente pelo menu.';
+
+      updateSystemStatus('Sistema Offline', 'error');
+      addLog('Sistema encerrado. Webcam desligada e catraca bloqueada.', 'aviso');
+
+      // 7. Retorna à tela de menu
+      showScreen('menu');
     }
 
     /**
@@ -1457,10 +2081,12 @@
         if (bestMatch && minDistance <= DISTANCE_THRESHOLD) {
           // Reconhecimento bem sucedido
           addLog(`Pessoa reconhecida: [${bestMatch.name}] - Distância: ${distanceFormatted}`, 'sucesso');
+          setDoor(true);
         } else {
           // Não reconhecido (distância acima do limiar seguro de 0.60)
           const infoExtra = minDistance !== Infinity ? ` (Menor distância encontrada: ${distanceFormatted} > Limiar 0.60)` : '';
           addLog(`Usuário Não Reconhecido${infoExtra}`, 'erro');
+          setDoor(false);
         }
 
       } catch (err) {
@@ -1501,20 +2127,26 @@
     // Apagar todos os usuários
     btnDeleteAll.addEventListener('click', clearAllUsers);
 
-    // Boot inicial do aplicativo
-    window.addEventListener('DOMContentLoaded', async () => {
-      addLog('Iniciando aplicação de reconhecimento facial no navegador...', 'info');
-      renderUsersList();
+    // Controles do Menu e Gerenciamento do Sistema
+    btnStartSystem.addEventListener('click', startSystem);
+    btnHowItWorks.addEventListener('click', () => {
+      howItWorksPanel.classList.toggle('hidden');
+    });
+    btnStopSystem.addEventListener('click', stopSystem);
+    btnRetryInit.addEventListener('click', startSystem);
+    btnBackToMenu.addEventListener('click', () => {
+      showScreen('menu');
+    });
 
-      try {
-        // 1. Carrega as redes neurais da CDN
-        await loadModels();
+    // Aliases didáticos
+    const loadDB = loadUsersFromStorage;
+    const saveDB = saveUsersToStorage;
+    const renderUsers = renderUsersList;
 
-        // 2. Abre a câmera e inicia renderização gráfica
-        await startWebcam();
-      } catch (err) {
-        console.error('Falha na inicialização do sistema:', err);
-      }
+    // Boot inicial do aplicativo: executa apenas renderUsers() e exibe o Menu Inicial
+    window.addEventListener('DOMContentLoaded', () => {
+      renderUsers();
+      showScreen('menu');
     });
   </script>
 </body>
